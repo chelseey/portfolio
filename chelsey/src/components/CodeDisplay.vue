@@ -1,15 +1,16 @@
 <template>
-    <pre>
+    <pre class="line-numbers">
       <code ref="codeBlock" class="language-html"></code>
     </pre>
   </template>
   
   <script>
-  import { ref, onMounted } from 'vue'
-  import { useRoute } from 'vue-router'
-  import Typed from 'typed.js'
-  import hljs from 'highlight.js/lib/core'
-  import vue from 'highlight.js/lib/languages/xml'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import Typed from 'typed.js'
+import hljs from 'highlight.js/lib/core'
+import vue from 'highlight.js/lib/languages/xml'
+import { fetchCode } from '../utils/codeFetcher'
   
   hljs.registerLanguage('xml', vue)
   
@@ -19,53 +20,48 @@
       const codeBlock = ref(null)
       const route = useRoute()
       const codeContent = ref('')
+      let typedInstance = null
   
-      const baseUrl = 'https://raw.githubusercontent.com/chelseey/chelsey/main/src/pages/'
-  
-      const codeLinkMap = {
-        Home: `${baseUrl}Home.vue`,
-        AboutMe: `${baseUrl}AboutMe.vue`,
-        Projects: `${baseUrl}Projects.vue`,
-        Settings: `${baseUrl}Settings.vue`,
-        Contact: `${baseUrl}Contact.vue`
+      const addLineNumbers = () => {
+        const html = codeBlock.value.innerHTML
+        const lines = html.split('\n')
+        const numbered = lines
+          .map((line) => `<span class="line">${line}</span>`) 
+          .join('\n')
+        codeBlock.value.innerHTML = numbered
       }
-  
-      const fetchCode = async () => {
-        const currentRouteName = route.name
-        let codeUrl = codeLinkMap[currentRouteName]
-        if (!codeUrl) {
-          codeContent.value = '// Code not available for this page.'
-          return
-        }
-        try {
-          const response = await fetch(codeUrl)
-          if (!response.ok) {
-            codeContent.value = `// Error fetching code from ${codeUrl}`
-            return
-          }
-          codeContent.value = await response.text()
-        } catch (error) {
-          codeContent.value = `// Error fetching code: ${error}`
-        }
-      }
-  
+
       const startTyping = () => {
         if (!codeBlock.value) return
-        const typed = new Typed(codeBlock.value, {
+        if (typedInstance) typedInstance.destroy()
+        codeBlock.value.innerHTML = ''
+        typedInstance = new Typed(codeBlock.value, {
           strings: [codeContent.value],
-          typeSpeed: 40,
-          backSpeed: 20,
+          typeSpeed: 20,
           showCursor: false,
           onComplete: () => {
             hljs.highlightElement(codeBlock.value)
+            addLineNumbers()
           }
         })
       }
   
+      const loadCode = async () => {
+        codeContent.value = await fetchCode(route.name)
+      }
+
       onMounted(async () => {
-        await fetchCode()
+        await loadCode()
         startTyping()
       })
+
+      watch(
+        () => route.name,
+        async () => {
+          await loadCode()
+          startTyping()
+        }
+      )
   
       return {
         codeBlock
@@ -83,6 +79,25 @@
     border-radius: 8px;
     overflow-x: auto;
     height: 300px;
+    counter-reset: line;
+  }
+
+  .line {
+    display: block;
+    padding-left: 2.5em;
+    position: relative;
+  }
+
+  .line::before {
+    counter-increment: line;
+    content: counter(line);
+    position: absolute;
+    left: 0;
+    width: 2em;
+    text-align: right;
+    margin-right: 0.5em;
+    color: var(--line-number-color, #888);
+    user-select: none;
   }
   </style>
   

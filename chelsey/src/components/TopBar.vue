@@ -71,7 +71,7 @@ export default {
     display: flex;
     align-items: center;
     background-color: var(--top-bar-bg, #1e1e1e);
-    padding: 0 1rem;
+    padding: 0;
     height: 2rem;
 }
 

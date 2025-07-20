@@ -50,6 +50,7 @@ export default {
   width: 100%; height: 100%;
   z-index: 0;     /* was -1; now 0 so it's *above* the page bg */
   opacity: 1;
+  pointer-events: none;
 }
 
 /* All your UI layers need to sit above the code: */

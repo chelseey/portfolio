@@ -2,7 +2,7 @@
 // files can be fetched from a different repository if needed.
 const baseUrl =
   import.meta.env.VITE_SOURCE_BASEURL ||
-  'https://raw.githubusercontent.com/chelseey/chelsey/main/src/pages/'
+  'https://raw.githubusercontent.com/chelseey/portfolio/refs/heads/main/chelsey/src/pages/'
 
 const codeLinkMap = {
   Home: `${baseUrl}Home.vue`,

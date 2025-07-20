@@ -47,7 +47,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 1rem;
+    padding-top: 0;
     overflow: auto;
   }
   .sidebar-item {

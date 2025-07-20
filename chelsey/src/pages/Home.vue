@@ -28,10 +28,8 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import CodeDisplay from '../components/CodeDisplay.vue'
 export default {
     name: 'Home',
-    components: { CodeDisplay },
     setup() {
         const scrollBox = ref(null)
         const welcomeSection = ref(null)
@@ -64,7 +62,6 @@ export default {
     width: 100%;
     height: 100%;
     z-index: -1;
-    opacity: 0.3;
 }
 
 .content-container {
